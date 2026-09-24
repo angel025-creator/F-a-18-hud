@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F/A-18 HUD (interactive)</title>
+<style>
+:root{
+  --bg:#ffffff;
+  --border:rgba(0,0,0,.15);
+  --border-strong:rgba(0,0,0,.4);
+  --surface-1:#f5f5f3;
+  --text:#1a1a1a;
+  --text-secondary:#555;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a1a;
+    --border:rgba(255,255,255,.15);
+    --border-strong:rgba(255,255,255,.4);
+    --surface-1:#262624;
+    --text:#f0f0ee;
+    --text-secondary:#b5b5b0;
+  }:root{--bg:#000;--border:rgba(255,255,255,.2);--border-strong:rgba(255,255,255,.5);--surface-1:#141414;--text:#f0f0ee;--text-secondary:#b5b5b0}
+}
+body{margin:0;padding:16px;max-width:480px;margin-inline:auto;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.g{fill:none;stroke:#1D9E75;stroke-width:1.5;stroke-linecap:round}
+.gt{fill:#1D9E75;font-family:var(--font-mono);font-size:12px}
+.gs{font-size:11px}
+.hit{fill:transparent}
+.z{cursor:pointer}
+.dash{stroke-dasharray:4 3}
+</style>
+</head>
+<body>
+<h2 class="sr">Interactive F/A-18 head-up display in air-to-air mode; tap any symbol to see what it does.</h2>
+<svg id="hud" width="100%" viewBox="0 0 380 410" role="img">
+<title>Detailed F/A-18 HUD</title>
+<desc>Head-up display with heading tape, airspeed and altitude scales, pitch ladder, flight path marker, angle of attack bracket, steering cue, gun reticle, target box, waypoint and weapon data.</desc>
+<rect x="10" y="10" width="360" height="390" rx="10" fill="none" stroke="var(--border-strong)" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+<!-- Pitch ladder -->
+<g class="z" data-k="pitch">
+<rect class="hit" x="130" y="145" width="120" height="140"/>
+<path class="g" d="M150 185H180M200 185H230M150 185V189M230 185V189M150 155H180M200 155H230M150 155V159M230 155V159"/>
+<path class="g dash" d="M150 245H180M200 245H230M150 245V241M230 245V241M150 275H180M200 275H230M150 275V271M230 275V271"/>
+<text class="gt gs" x="140" y="189" text-anchor="middle">5</text>
+<text class="gt gs" x="240" y="189" text-anchor="middle">5</text>
+<text class="gt gs" x="140" y="159" text-anchor="middle">10</text>
+<text class="gt gs" x="240" y="159" text-anchor="middle">10</text>
+<text class="gt gs" x="140" y="249" text-anchor="middle">5</text>
+<text class="gt gs" x="240" y="249" text-anchor="middle">5</text>
+<text class="gt gs" x="140" y="279" text-anchor="middle">10</text>
+<text class="gt gs" x="240" y="279" text-anchor="middle">10</text>
+</g>
+
+<!-- Horizon line -->
+<g class="z" data-k="horizon">
+<rect class="hit" x="105" y="210" width="65" height="10"/>
+<rect class="hit" x="210" y="210" width="65" height="10"/>
+<path class="g" d="M110 215H170M210 215H270"/>
+</g>
+
+<!-- Heading scale -->
+<g class="z" data-k="heading">
+<rect class="hit" x="105" y="24" width="170" height="52"/>
+<path class="g" d="M110 46H270M110 40V46M130 40V46M150 38V46M170 40V46M190 38V46M210 40V46M230 38V46M250 40V46M270 40V46M190 48L185 55H195Z"/>
+<text class="gt gs" x="150" y="32" text-anchor="middle">35</text>
+<text class="gt gs" x="190" y="32" text-anchor="middle">36</text>
+<text class="gt gs" x="230" y="32" text-anchor="middle">01</text>
+<rect class="g" x="173" y="57" width="34" height="16" rx="2"/>
+<text class="gt" x="190" y="69" text-anchor="middle">360</text>
+</g>
+
+<!-- Airspeed -->
+<g class="z" data-k="spd">
+<rect class="hit" x="16" y="150" width="64" height="130"/>
+<path class="g" d="M74 155V275M68 155H74M68 175H74M68 195H74M68 215H74M68 235H74M68 255H74M68 275H74"/>
+<rect class="g" x="20" y="205" width="46" height="20" rx="2"/>
+<text class="gt" x="43" y="219" text-anchor="middle">350</text>
+</g>
+
+<!-- Mach and G -->
+<g class="z" data-k="mg">
+<rect class="hit" x="16" y="283" width="60" height="36"/>
+<text class="gt" x="22" y="296">M.85</text>
+<text class="gt" x="22" y="312">G 3.2</text>
+</g>
+
+<!-- Altitude -->
+<g class="z" data-k="alt">
+<rect class="hit" x="300" y="150" width="70" height="130"/>
+<path class="g" d="M306 155V275M306 155H312M306 175H312M306 195H312M306 215H312M306 235H312M306 255H312M306 275H312"/>
+<rect class="g" x="314" y="205" width="52" height="20" rx="2"/>
+<text class="gt" x="340" y="219" text-anchor="middle">12500</text>
+</g>
+
+<!-- Radar altitude -->
+<g class="z" data-k="ralt">
+<rect class="hit" x="310" y="283" width="56" height="18"/>
+<text class="gt" x="364" y="296" text-anchor="end">R 1200</text>
+</g>
+
+<!-- Flight path marker -->
+<g class="z" data-k="fpm">
+<rect class="hit" x="168" y="190" width="44" height="30"/>
+<circle class="g" cx="190" cy="210" r="7"/>
+<path class="g" d="M172 210H183M197 210H208M190 203V195"/>
+</g>
+
+<!-- AoA bracket -->
+<g class="z" data-k="aoa">
+<rect class="hit" x="154" y="194" width="13" height="32"/>
+<path class="g" d="M164 198H160V222H164"/>
+</g>
+
+<!-- Steering cue -->
+<g class="z" data-k="steer">
+<rect class="hit" x="106" y="88" width="28" height="24"/>
+<path class="g" d="M120 92L128 100L120 108L112 100Z"/>
+</g>
+
+<!-- Gun reticle -->
+<g class="z" data-k="pip">
+<rect class="hit" x="166" y="80" width="48" height="50"/>
+<circle class="g" cx="190" cy="105" r="14"/>
+<circle cx="190" cy="105" r="1.8" fill="#1D9E75"/>
+<path class="g" d="M190 85V91M190 119V125M170 105H176M204 105H210"/>
+</g>
+
+<!-- Target box -->
+<g class="z" data-k="tgt">
+<rect class="hit" x="234" y="84" width="50" height="62"/>
+<rect class="g" x="246" y="88" width="26" height="26"/>
+<text class="gt gs" x="259" y="128" text-anchor="middle">4.2</text>
+<text class="gt gs" x="259" y="140" text-anchor="middle">+320</text>
+</g>
+
+<!-- Navigation data -->
+<g class="z" data-k="wpt">
+<rect class="hit" x="16" y="338" width="100" height="36"/>
+<text class="gt" x="22" y="350">WP3 12.4</text>
+<text class="gt" x="22" y="366">TTG 3:42</text>
+</g>
+
+<!-- Weapon status -->
+<g class="z" data-k="wpn">
+<rect class="hit" x="290" y="338" width="76" height="36"/>
+<text class="gt" x="364" y="350" text-anchor="end">AIM-9</text>
+<text class="gt" x="364" y="366" text-anchor="end">RDY 2</text>
+</g>
+
+<!-- Master mode -->
+<g class="z" data-k="mode">
+<rect class="hit" x="160" y="376" width="60" height="18"/>
+<text class="gt" x="190" y="390" text-anchor="middle">A/A</text>
+</g>
+
+<!-- Highlight ring (moved by script) -->
+<rect id="hl" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-dasharray="4 3" rx="4" style="display:none;pointer-events:none"/>
+</svg>
+
+<div style="margin-top:8px;padding:12px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--surface-1)">
+<div id="tt" style="font-weight:500;font-size:15px">Tap any symbol</div>
+<div id="tb" style="font-size:14px;line-height:1.6;color:var(--text-secondary);margin-top:4px">Each item on the display is tappable. You'll get what it shows and how to use it.</div>
+</div>
+
+<script>
+const D={
+heading:["Heading scale","Magnetic heading in degrees with the last zero dropped, so 36 is north. The caret and box show your current heading. Turn until it matches the heading you want, or until the steering diamond centers."],
+spd:["Airspeed","Calibrated airspeed in knots. Hold your target speed on approach and keep it above your best-turn speed in a fight."],
+mg:["Mach and G","Mach number on top, current load factor below. Watch G against structural limits during hard maneuvers."],
+alt:["Altitude","Altitude in feet, barometric by default. Check it against your floor, ceiling and terrain."],
+ralt:["Radar altitude","Height above the ground or water, read by the radar altimeter. It matters most in low flying and landing, and low-altitude warnings key off it."],
+pitch:["Pitch ladder","Climb and dive angle in 5 degree steps. Solid bars are above the horizon. Dashed bars are below it and angle toward it, so you can tell which way is up even in a steep dive."],
+horizon:["Horizon line","The 0 degree bar, the real horizon. It rolls with the jet, so its tilt shows bank angle. Keep it level to fly wings level."],
+fpm:["Flight path marker","Shows where the jet is actually going, not where the nose points. Put it on a landing aim point or target line to fly there. Above the horizon means climbing."],
+aoa:["Angle of attack bracket","Used on approach. It shifts relative to the flight path marker as angle of attack changes. Keep the marker lined up with the bracket to hold an on-speed approach."],
+steer:["Steering cue","Points you along the course to the selected waypoint or target. Fly the flight path marker onto the diamond to track it."],
+pip:["Gun reticle","The aiming cue, a circle with a center dot. In gun mode, put it on the target, use range and closure to judge lead, then fire."],
+tgt:["Target box","Marks a locked or designated target. The numbers underneath are range in nautical miles and closure rate in knots. Get the box near your aiming cue and inside weapon range before firing."],
+wpt:["Navigation data","Selected waypoint number and distance to it, with time to go below. Useful for legs of a route and timing."],
+wpn:["Weapon status","The selected weapon, here an AIM-9 Sidewinder, with the count and readiness. Verify weapon and count before pressing the release button."],
+mode:["Master mode","A/A means air-to-air. Other modes such as NAV, A/G and landing change which symbols appear and how the cues behave."]
+};
+const svg=document.getElementById('hud'),hl=document.getElementById('hl');
+svg.querySelectorAll('.z').forEach(g=>g.addEventListener('click',()=>{
+  const b=g.querySelector('.hit').getBBox(),d=D[g.dataset.k];
+  hl.setAttribute('x',b.x);hl.setAttribute('y',b.y);
+  hl.setAttribute('width',b.width);hl.setAttribute('height',b.height);
+  hl.style.display='block';
+  document.getElementById('tt').textContent=d[0];
+  document.getElementById('tb').textContent=d[1];
+}));
+</script>
+</body>
+</html>
