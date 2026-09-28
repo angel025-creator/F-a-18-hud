@@ -25,7 +25,6 @@ body{margin:0;min-height:100vh;padding:16px;max-width:480px;margin-inline:auto;b
   letter-spacing: -0.02em;
   text-shadow: 0px 0px 2px rgba(0, 255, 170, 0.6);
 }
-.dot{fill:#00ffaa}
 .gs{font-size: 11px}
 .hit{fill:transparent}
 .z{cursor:pointer}
@@ -81,14 +80,12 @@ body[data-mode="ag"] .rail { border-color: rgba(239, 159, 39, 0.35) }
 body[data-mode="ag"] #modeBtn .val { color: #EF9F27; text-shadow: 0px 0px 2px rgba(239, 159, 39, 0.5); }
 body[data-mode="ag"] .g { stroke: #EF9F27; filter: drop-shadow(0px 0px 1.5px rgba(239, 159, 39, 0.6)); }
 body[data-mode="ag"] .gt { fill: #EF9F27; text-shadow: 0px 0px 2px rgba(239, 159, 39, 0.6); }
-body[data-mode="ag"] .dot { fill: #EF9F27 }
 
 /* 2. Navigation State */
 body[data-mode="nav"] .rail { border-color: rgba(64, 169, 255, 0.35) }
 body[data-mode="nav"] #modeBtn .val { color: #40a9ff; text-shadow: 0px 0px 2px rgba(64, 169, 255, 0.5); }
 body[data-mode="nav"] .g { stroke: #40a9ff; filter: drop-shadow(0px 0px 1.5px rgba(64, 169, 255, 0.6)); }
 body[data-mode="nav"] .gt { fill: #40a9ff; text-shadow: 0px 0px 2px rgba(64, 169, 255, 0.6); }
-body[data-mode="nav"] .dot { fill: #40a9ff }
 
 /* Universal Highlight Interaction Behavior */
 body[data-mode="aa"] #hl { stroke: #EF9F27 }
@@ -199,7 +196,7 @@ body:not([data-mode="nav"]) .nav{display:none}
 <g class="z aa" data-k="pip">
 <rect class="hit" x="166" y="80" width="48" height="50"/>
 <circle class="g" cx="190" cy="105" r="14"/>
-<circle cx="190" cy="105" r="1.8" class="dot"/>
+<circle cx="190" cy="105" r="1.8" fill="currentColor"/>
 <path class="g" d="M190 85V91M190 119V125M170 105H176M204 105H210"/>
 </g>
 
@@ -241,7 +238,7 @@ body:not([data-mode="nav"]) .nav{display:none}
 <g class="z ag" data-k="ccip">
 <rect class="hit" x="170" y="88" width="40" height="34"/>
 <circle class="g" cx="190" cy="108" r="10"/>
-<circle cx="190" cy="108" r="1.8" class="dot"/>
+<circle cx="190" cy="108" r="1.8" fill="currentColor"/>
 <path class="g" d="M190 94V98M190 118V122M176 108H180M200 108H204"/>
 </g>
 
@@ -249,7 +246,7 @@ body:not([data-mode="nav"]) .nav{display:none}
 <g class="z ag" data-k="tdbox">
 <rect class="hit" x="234" y="84" width="50" height="62"/>
 <path class="g" d="M259 88L272 101L259 114L246 101Z"/>
-<circle cx="259" cy="101" r="1.6" class="dot"/>
+<circle cx="259" cy="101" r="1.6" fill="currentColor"/>
 <text class="gt gs" x="259" y="128" text-anchor="middle">6.8</text>
 <text class="gt gs" x="259" y="140" text-anchor="middle">TTR 14</text>
 </g>
@@ -260,6 +257,11 @@ body:not([data-mode="nav"]) .nav{display:none}
 <text class="gt" x="364" y="350" text-anchor="end">MK-82</text>
 <text class="gt" x="364" y="366" text-anchor="end">RDY 4</text>
 </g>
+<style>
+svg circle[fill="currentColor"]{fill:#00ffaa}
+body[data-mode="ag"] svg circle[fill="currentColor"]{fill:#EF9F27}
+body[data-mode="nav"] svg circle[fill="currentColor"]{fill:#40a9ff}
+</style>
 
 <!-- ATTACK: master mode -->
 <g class="z ag" data-k="modeAG">
@@ -303,7 +305,6 @@ body:not([data-mode="nav"]) .nav{display:none}
 <div id="tt" style="font-weight:500;font-size:15px">Tap any symbol</div>
 <div id="tb" style="font-size:14px;line-height:1.6;color:#b5b5b0;margin-top:4px">Each item on the display is tappable. You'll get what it shows and how to use it.</div>
 </div>
-
 <script>
 const D={
 heading:["Heading scale","Magnetic heading in degrees with the last zero dropped, so 36 is north. The caret and box show your current heading. Turn until it matches the heading you want, or until the steering diamond centers."],
