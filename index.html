@@ -24,9 +24,9 @@ svg.hud *{stroke:var(--g);stroke-width:1.6;fill:none;stroke-linecap:round}
 svg.hud text{fill:var(--g);stroke:none;font:12px ui-monospace,Menlo,Consolas,monospace}
 svg.hud .f{fill:var(--g)}
 svg.hud .hit{stroke:none;fill:transparent}
-svg.hud .t.sel .hit{stroke:#fff;stroke-width:1.4;stroke-dasharray:4 3;fill:rgba(57,255,136,.14)}
+svg.hud .t.sel .hit{stroke:#fff;stroke-width:1.4;stroke-dasharray:4 3;fill:var(--g);fill-opacity:.14}
 .t{cursor:pointer}
-.t.sel{filter:drop-shadow(0 0 5px #b8ffd3)}
+.t.sel{filter:drop-shadow(0 0 5px var(--g))}
 #mode{display:block;width:100%;margin:12px 0;padding:12px;background:#151a17;border:1px solid #3a4a41;border-radius:12px;color:inherit;font:inherit;cursor:pointer;text-align:center}
 #mode span{display:block;color:#8a9a90;font-size:12px}
 #mode b{display:block;color:var(--g);font:600 22px ui-monospace,Menlo,monospace;margin:2px 0}
@@ -165,6 +165,7 @@ const PLANES=[
  {id:'a10',name:'A-10C',sub:'Warthog',soon:1}
 ];
 
+const COL={'A/A':'#39ff88','DGFT':'#ff5cf0','GUN':'#f5ff5a','ATTACK':'#ffa62b','A/G':'#6aa8ff','ROCKET':'#ff6a2a','BOMB':'#b48cff','NAV':'#4fe8ff','LAND':'#ff4a4a'};
 let cur=PLANES[0],mi=0;
 const $=id=>document.getElementById(id),hud=$('hud');
 
@@ -179,6 +180,7 @@ function card(t,x){$('card').innerHTML=`<h2>${t}</h2><p>${x}</p>`;}
 function render(){
  const m=cur.modes[mi],next=cur.modes[(mi+1)%cur.modes.length];
  document.querySelectorAll('.plane').forEach(b=>{b.classList.toggle('on',b.dataset.id===cur.id);b.setAttribute('aria-selected',b.dataset.id===cur.id);});
+ document.documentElement.style.setProperty('--g',COL[m.id]||'#39ff88');
  hud.innerHTML=m.draw();
  hud.querySelectorAll('.t').forEach(g=>{const b=g.getBBox();
   g.insertAdjacentHTML('afterbegin',`<rect class="hit" rx="5" x="${b.x-8}" y="${b.y-8}" width="${b.width+16}" height="${b.height+16}"/>`);});
