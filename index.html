@@ -79,6 +79,8 @@ const INFO={
  gear:['Gear and radar altitude','Landing gear status and height above the ground in feet.']
 };
 
+INFO.rkt=['Rocket aiming mark','Where unguided rockets land if fired now. Dive at the target, put the mark on it, and fire.'];
+const TU={sp:'220',al:'4500',m:'M.33',g:'G 1.4'};
 // shared pieces
 function heading(y){let s='',i,x;
  s+=L(96,y,304,y);
@@ -86,9 +88,9 @@ function heading(y){let s='',i,x;
  s+=T(140,y-14,'35','middle')+T(200,y-14,'36','middle')+T(260,y-14,'01','middle');
  s+=`<path d="M200 ${y+2}l-6 9h12z"/><rect x="176" y="${y+13}" width="48" height="20" rx="3"/>`+T(200,y+28,'360','middle');
  return G('hdg',s);}
-function tapes(){
- return G('spd',`<path d="M78 130V270M78 130h-6M78 270h-6M78 150h-4M78 170h-4M78 190h-4M78 210h-4M78 230h-4M78 250h-4"/><rect x="14" y="190" width="54" height="22" rx="3"/>`+T(41,206,'350','middle'))
- +G('alt',`<path d="M322 130V270M322 130h6M322 270h6M322 150h4M322 170h4M322 190h4M322 210h4M322 230h4M322 250h4"/><rect x="332" y="190" width="56" height="22" rx="3"/>`+T(360,206,'12500','middle'));}
+function tapes(sp='350',al='12500'){
+ return G('spd',`<path d="M78 130V270M78 130h-6M78 270h-6M78 150h-4M78 170h-4M78 190h-4M78 210h-4M78 230h-4M78 250h-4"/><rect x="14" y="190" width="54" height="22" rx="3"/>`+T(41,206,sp,'middle'))
+ +G('alt',`<path d="M322 130V270M322 130h6M322 270h6M322 150h4M322 170h4M322 190h4M322 210h4M322 230h4M322 250h4"/><rect x="332" y="190" width="56" height="22" rx="3"/>`+T(360,206,al,'middle'));}
 function ladder(){let s='';
  [[-60,10,0],[-30,5,0],[30,5,1],[60,10,1]].forEach(([d,n,dash])=>{const y=200+d,da=dash?' stroke-dasharray="4 3"':'';
   s+=`<path d="M150 ${y}H176M224 ${y}H250"${da}/>`+T(142,y+4,n,'end')+T(258,y+4,n);});
@@ -96,8 +98,8 @@ function ladder(){let s='';
  return G('ladder',s);}
 function fpm(){return G('fpm','<circle cx="200" cy="200" r="7"/><path d="M186 200h7M207 200h7M200 193v-7"/>');}
 function aoa(){return G('aoa','<path d="M158 186h-7v28h7"/>');}
-function mg(){return G('mg',T(20,290,'M.85')+T(20,305,'G 3.2'));}
-function base(hy){return heading(hy)+tapes()+ladder()+fpm()+aoa()+mg();}
+function mg(m='M.85',g='G 3.2'){return G('mg',T(20,290,m)+T(20,305,g));}
+function base(hy,o={}){return heading(hy)+tapes(o.sp,o.al)+ladder()+fpm()+aoa()+mg(o.m,o.g);}
 const wpTxt=()=>G('nav',T(20,340,'WP3 12.4')+T(20,355,'TTG 3:42'));
 const lab=(t,y)=>T(200,y,t,'middle');
 function store(a,b){return G('store',T(380,340,a,'end')+T(380,355,b,'end'));}
@@ -140,6 +142,23 @@ const PLANES=[
    draw:()=>base(368)+G('ils','<path d="M208 90V310M110 194H290" stroke-dasharray="6 4"/>')
     +G('aoai','<circle cx="126" cy="200" r="5"/><path d="M118 180l8-6 8 6M118 220l8 6 8-6"/>')
     +wpTxt()+G('gear',T(380,290,'GEAR DN','end')+T(380,305,'RA 250','end'))+lab('LAND',26)}
+ ]},
+ {id:'a29',name:'A-29B',sub:'Super Tucano',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint, wind, ETA and fuel are shown.',
+   draw:()=>base(46,TU)+G('wp','<circle cx="250" cy="110" r="10"/><path d="M250 100v-6M250 120v6M240 110h-6M260 110h6"/>')
+    +wpTxt()+G('wind',T(380,290,'WIND','end')+T(380,305,'270/12','end'))+G('fuel',T(380,340,'ETA 1432','end')+T(380,355,'FUEL 1.9','end'))+lab('NAV',400)},
+  {id:'GUN',desc:'Gun. Put the reticle on the target and fire the wing-mounted .50 cal guns.',
+   draw:()=>base(46,TU)+G('gun','<circle cx="200" cy="110" r="14"/><circle class="f" cx="200" cy="110" r="1.6"/><path d="M200 90v6M200 124v6M180 110h6M214 110h6"/>')
+    +G('tgt','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'0.8','middle'))
+    +wpTxt()+rng('R 800')+store('GUN','RDS 200')+lab('GUN',400)},
+  {id:'ROCKET',desc:'Rockets. The aiming mark shows where unguided rockets will land.',
+   draw:()=>base(46,TU)+G('rkt','<circle cx="200" cy="105" r="10"/><path d="M190 105h20M200 95v20"/>')
+    +G('tgt','<path d="M262 92h-10v10M262 128h-10v-10M290 92h10v10M290 128h10v-10" transform="translate(-8 0)"/>')
+    +wpTxt()+rng('R 1500')+store('RKT 70mm','RDY 14')+lab('RKT',400)},
+  {id:'BOMB',desc:'Bombs. The pipper shows the predicted impact point. Release when the cue reaches it.',
+   draw:()=>base(46,TU)+G('pipper','<circle cx="200" cy="105" r="10"/><circle class="f" cx="200" cy="105" r="1.6"/>')
+    +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
+    +wpTxt()+rng('TTR 9')+store('MK-82','RDY 2')+lab('A/G',400)}
  ]},
  {id:'f16',name:'F-16C',sub:'Viper',soon:1},
  {id:'f22',name:'F-22A',sub:'Raptor',soon:1},
