@@ -3,364 +3,174 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>F/A-18 HUD (interactive)</title>
+<title>Fighter HUDs (interactive)</title>
 <style>
-html,body{background:#0a0a0c}
-body{margin:0;min-height:100vh;padding:16px;max-width:480px;margin-inline:auto;background:#0a0a0c;color:#f0f0ee;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-
-/* Core CRT Avionics Aesthetics */
-.g {
-  fill: none;
-  stroke: #00ffaa;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  filter: drop-shadow(0px 0px 1.5px rgba(0, 255, 170, 0.6));
-}
-.gt {
-  fill: #00ffaa;
-  font-family: "Courier New", Courier, Monaco, "Lucida Console", ui-monospace, monospace;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: -0.02em;
-  text-shadow: 0px 0px 2px rgba(0, 255, 170, 0.6);
-}
-.gs{font-size: 11px}
-.hit{fill:transparent}
-.z{cursor:pointer}
-.dash{stroke-dasharray:5 4}
-.wrap{display:flex;align-items:center;gap:12px}
-.wrap svg{flex:1;min-width:0}
-
-/* Physical Hardware Control Aesthetics */
-.rail {
-  flex: 0 0 74px;
-  height: 180px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed rgba(0, 255, 170, 0.25);
-  border-right: none;
-  border-radius: 16px 0 0 16px;
-  padding: 6px 0 6px 6px;
-  background: linear-gradient(90deg, #101216 0%, #161920 100%);
-}
-#modeBtn {
-  width: 100%;
-  background: #1c2029;
-  color: #f0f0ee;
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 8px;
-  padding: 12px 2px;
-  font: inherit;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  transition: all 0.15s ease;
-}
-#modeBtn:active {
-  transform: scale(0.96);
-  background: #161920;
-}
-#modeBtn .lbl{font-size:10px;color:#8a93a5;letter-spacing:.1em;font-weight:600}
-#modeBtn .val {
-  font: 700 13px "Courier New", Courier, monospace;
-  color: #00ffaa;
-  text-shadow: 0px 0px 2px rgba(0, 255, 170, 0.5);
-}
-#modeBtn .sub{font-size:9px;color:#8a93a5}
-
-/* Dynamic State Engine Overrides */
-/* 1. Attack / Air-to-Ground State */
-body[data-mode="ag"] .rail { border-color: rgba(239, 159, 39, 0.35) }
-body[data-mode="ag"] #modeBtn .val { color: #EF9F27; text-shadow: 0px 0px 2px rgba(239, 159, 39, 0.5); }
-body[data-mode="ag"] .g { stroke: #EF9F27; filter: drop-shadow(0px 0px 1.5px rgba(239, 159, 39, 0.6)); }
-body[data-mode="ag"] .gt { fill: #EF9F27; text-shadow: 0px 0px 2px rgba(239, 159, 39, 0.6); }
-
-/* 2. Navigation State */
-body[data-mode="nav"] .rail { border-color: rgba(64, 169, 255, 0.35) }
-body[data-mode="nav"] #modeBtn .val { color: #40a9ff; text-shadow: 0px 0px 2px rgba(64, 169, 255, 0.5); }
-body[data-mode="nav"] .g { stroke: #40a9ff; filter: drop-shadow(0px 0px 1.5px rgba(64, 169, 255, 0.6)); }
-body[data-mode="nav"] .gt { fill: #40a9ff; text-shadow: 0px 0px 2px rgba(64, 169, 255, 0.6); }
-
-/* Universal Highlight Interaction Behavior */
-body[data-mode="aa"] #hl { stroke: #EF9F27 }
-body[data-mode="ag"] #hl { stroke: #00ffaa }
-body[data-mode="nav"] #hl { stroke: #EF9F27 }
-
-/* Layout State Visibility Rules */
-body:not([data-mode="aa"]) .aa{display:none}
-body:not([data-mode="ag"]) .ag{display:none}
-body:not([data-mode="nav"]) .nav{display:none}
+:root{--g:#39ff88;--dim:#1f7a44;--bg:#000;--panel:#0d0f0e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:#d5e8db;font-family:system-ui,-apple-system,Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:19px;margin:4px 0 10px;font-weight:600}
+#planes{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+.plane{flex:0 0 132px;scroll-snap-align:start;background:var(--panel);border:1px solid #23302a;border-radius:12px;padding:10px 8px;color:inherit;text-align:center;font:inherit;cursor:pointer}
+.plane svg{width:64px;height:40px;fill:none;stroke:var(--dim);stroke-width:2}
+.plane b{display:block;font-size:14px;margin-top:4px}
+.plane small{color:#7d9186;font-size:12px}
+.plane.on{border-color:var(--g)}
+.plane.on svg{stroke:var(--g)}
+.plane.soon{opacity:.55}
+#hudbox{border:1px dashed #2a4a37;border-radius:14px;padding:6px;background:#050706}
+svg.hud{display:block;width:100%;height:auto}
+svg.hud *{stroke:var(--g);stroke-width:1.6;fill:none;stroke-linecap:round}
+svg.hud text{fill:var(--g);stroke:none;font:12px ui-monospace,Menlo,Consolas,monospace}
+svg.hud .f{fill:var(--g)}
+svg.hud .hit{stroke:none;fill:transparent}
+svg.hud .t.sel .hit{stroke:#fff;stroke-width:1.4;stroke-dasharray:4 3;fill:rgba(57,255,136,.14)}
+.t{cursor:pointer}
+.t.sel{filter:drop-shadow(0 0 5px #b8ffd3)}
+#mode{display:block;width:100%;margin:12px 0;padding:12px;background:#151a17;border:1px solid #3a4a41;border-radius:12px;color:inherit;font:inherit;cursor:pointer;text-align:center}
+#mode span{display:block;color:#8a9a90;font-size:12px}
+#mode b{display:block;color:var(--g);font:600 22px ui-monospace,Menlo,monospace;margin:2px 0}
+#card{background:#111;border:1px solid #2b2f2d;border-radius:12px;padding:14px 16px}
+#card h2{margin:0 0 6px;font-size:18px}
+#card p{margin:0;line-height:1.55;color:#b9c4bd}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
 </style>
 </head>
-<body data-mode="aa">
-<h2 class="sr">Interactive F/A-18 head-up display with air-to-air, attack and navigation modes; use the MODE button to cycle through them and tap any symbol to see what it does.</h2>
-<div class="wrap">
-<div class="rail">
-<button id="modeBtn" type="button" aria-label="Master mode A/A. Tap to switch to attack.">
-<span class="lbl">MODE</span><span class="val" id="modeVal">A/A</span><span class="sub" id="modeSub">tap: attack</span>
-</button>
-</div>
-<svg id="hud" width="100%" viewBox="0 0 380 410" role="img">
-<title>Detailed F/A-18 HUD</title>
-<desc>Head-up display with switchable air-to-air, attack and navigation modes, with heading tape, airspeed and altitude scales, pitch ladder, flight path marker, angle of attack bracket, steering cue, gun reticle, target box, waypoint and weapon data.</desc>
-<rect x="10" y="10" width="360" height="390" rx="10" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="4 4"/>
-
-<!-- Pitch ladder -->
-<g class="z" data-k="pitch">
-<rect class="hit" x="130" y="145" width="120" height="140"/>
-<path class="g" d="M150 185H180M200 185H230M150 185V189M230 185V189M150 155H180M200 155H230M150 155V159M230 155V159"/>
-<path class="g dash" d="M150 245H180M200 245H230M150 245V241M230 245V241M150 275H180M200 275H230M150 275V271M230 275V271"/>
-<text class="gt gs" x="140" y="189" text-anchor="middle">5</text>
-<text class="gt gs" x="240" y="189" text-anchor="middle">5</text>
-<text class="gt gs" x="140" y="159" text-anchor="middle">10</text>
-<text class="gt gs" x="240" y="159" text-anchor="middle">10</text>
-<text class="gt gs" x="140" y="249" text-anchor="middle">5</text>
-<text class="gt gs" x="240" y="249" text-anchor="middle">5</text>
-<text class="gt gs" x="140" y="279" text-anchor="middle">10</text>
-<text class="gt gs" x="240" y="279" text-anchor="middle">10</text>
-</g>
-
-<!-- Horizon line -->
-<g class="z" data-k="horizon">
-<rect class="hit" x="105" y="210" width="65" height="10"/>
-<rect class="hit" x="210" y="210" width="65" height="10"/>
-<path class="g" d="M110 215H170M210 215H270"/>
-</g>
-
-<!-- Heading scale -->
-<g class="z" data-k="heading">
-<rect class="hit" x="105" y="24" width="170" height="52"/>
-<path class="g" d="M110 46H270M110 40V46M130 40V46M150 38V46M170 40V46M190 38V46M210 40V46M230 38V46M250 40V46M270 40V46M190 48L185 55H195Z"/>
-<text class="gt gs" x="150" y="32" text-anchor="middle">35</text>
-<text class="gt gs" x="190" y="32" text-anchor="middle">36</text>
-<text class="gt gs" x="230" y="32" text-anchor="middle">01</text>
-<rect class="g" x="173" y="57" width="34" height="16" rx="2"/>
-<text class="gt" x="190" y="69" text-anchor="middle">360</text>
-</g>
-
-<!-- Airspeed -->
-<g class="z" data-k="spd">
-<rect class="hit" x="16" y="150" width="64" height="130"/>
-<path class="g" d="M74 155V275M68 155H74M68 175H74M68 195H74M68 215H74M68 235H74M68 255H74M68 275H74"/>
-<rect class="g" x="20" y="205" width="46" height="20" rx="2"/>
-<text class="gt" x="43" y="219" text-anchor="middle">350</text>
-</g>
-
-<!-- Mach and G -->
-<g class="z" data-k="mg">
-<rect class="hit" x="16" y="283" width="60" height="36"/>
-<text class="gt" x="22" y="296">M.85</text>
-<text class="gt" x="22" y="312">G 3.2</text>
-</g>
-
-<!-- Altitude -->
-<g class="z" data-k="alt">
-<rect class="hit" x="300" y="150" width="70" height="130"/>
-<path class="g" d="M306 155V275M306 155H312M306 175H312M306 195H312M306 215H312M306 235H312M306 255H312M306 275H312"/>
-<rect class="g" x="314" y="205" width="52" height="20" rx="2"/>
-<text class="gt" x="340" y="219" text-anchor="middle">12500</text>
-</g>
-
-<!-- Radar altitude -->
-<g class="z" data-k="ralt">
-<rect class="hit" x="310" y="283" width="56" height="18"/>
-<text class="gt" x="364" y="296" text-anchor="end">R 1200</text>
-</g>
-
-<!-- Flight path marker -->
-<g class="z" data-k="fpm">
-<rect class="hit" x="168" y="190" width="44" height="30"/>
-<circle class="g" cx="190" cy="210" r="7"/>
-<path class="g" d="M172 210H183M197 210H208M190 203V195"/>
-</g>
-
-<!-- AoA bracket -->
-<g class="z" data-k="aoa">
-<rect class="hit" x="154" y="194" width="13" height="32"/>
-<path class="g" d="M164 198H160V222H164"/>
-</g>
-
-<!-- Steering cue -->
-<g class="z" data-k="steer">
-<rect class="hit" x="106" y="88" width="28" height="24"/>
-<path class="g" d="M120 92L128 100L120 108L112 100Z"/>
-</g>
-
-<!-- Gun reticle -->
-<g class="z aa" data-k="pip">
-<rect class="hit" x="166" y="80" width="48" height="50"/>
-<circle class="g" cx="190" cy="105" r="14"/>
-<circle cx="190" cy="105" r="1.8" fill="currentColor"/>
-<path class="g" d="M190 85V91M190 119V125M170 105H176M204 105H210"/>
-</g>
-
-<!-- Target box -->
-<g class="z aa" data-k="tgt">
-<rect class="hit" x="234" y="84" width="50" height="62"/>
-<rect class="g" x="246" y="88" width="26" height="26"/>
-<text class="gt gs" x="259" y="128" text-anchor="middle">4.2</text>
-<text class="gt gs" x="259" y="140" text-anchor="middle">+320</text>
-</g>
-
-<!-- Navigation data -->
-<g class="z" data-k="wpt">
-<rect class="hit" x="16" y="338" width="100" height="36"/>
-<text class="gt" x="22" y="350">WP3 12.4</text>
-<text class="gt" x="22" y="366">TTG 3:42</text>
-</g>
-
-<!-- Weapon status -->
-<g class="z aa" data-k="wpn">
-<rect class="hit" x="290" y="338" width="76" height="36"/>
-<text class="gt" x="364" y="350" text-anchor="end">AIM-9</text>
-<text class="gt" x="364" y="366" text-anchor="end">RDY 2</text>
-</g>
-
-<!-- Master mode -->
-<g class="z aa" data-k="mode">
-<rect class="hit" x="160" y="376" width="60" height="18"/>
-<text class="gt" x="190" y="390" text-anchor="middle">A/A</text>
-</g>
-
-<!-- ATTACK: bomb fall line -->
-<g class="z ag" data-k="fall">
-<rect class="hit" x="178" y="118" width="24" height="72"/>
-<path class="g dash" d="M190 190V122"/>
-</g>
-
-<!-- ATTACK: CCIP pipper -->
-<g class="z ag" data-k="ccip">
-<rect class="hit" x="170" y="88" width="40" height="34"/>
-<circle class="g" cx="190" cy="108" r="10"/>
-<circle cx="190" cy="108" r="1.8" fill="currentColor"/>
-<path class="g" d="M190 94V98M190 118V122M176 108H180M200 108H204"/>
-</g>
-
-<!-- ATTACK: designated ground target -->
-<g class="z ag" data-k="tdbox">
-<rect class="hit" x="234" y="84" width="50" height="62"/>
-<path class="g" d="M259 88L272 101L259 114L246 101Z"/>
-<circle cx="259" cy="101" r="1.6" fill="currentColor"/>
-<text class="gt gs" x="259" y="128" text-anchor="middle">6.8</text>
-<text class="gt gs" x="259" y="140" text-anchor="middle">TTR 14</text>
-</g>
-
-<!-- ATTACK: weapon status -->
-<g class="z ag" data-k="wpnAG">
-<rect class="hit" x="290" y="338" width="76" height="36"/>
-<text class="gt" x="364" y="350" text-anchor="end">MK-82</text>
-<text class="gt" x="364" y="366" text-anchor="end">RDY 4</text>
-</g>
-<style>
-svg circle[fill="currentColor"]{fill:#00ffaa}
-body[data-mode="ag"] svg circle[fill="currentColor"]{fill:#EF9F27}
-body[data-mode="nav"] svg circle[fill="currentColor"]{fill:#40a9ff}
-</style>
-
-<!-- ATTACK: master mode -->
-<g class="z ag" data-k="modeAG">
-<rect class="hit" x="160" y="376" width="60" height="18"/>
-<text class="gt" x="190" y="390" text-anchor="middle">A/G</text>
-</g>
-
-<!-- NAV: waypoint bearing marker on heading scale -->
-<g class="z nav" data-k="wptbrg">
-<rect class="hit" x="216" y="47" width="28" height="16"/>
-<path class="g" d="M230 48L235 53L230 58L225 53Z"/>
-</g>
-
-<!-- NAV: ground speed and wind -->
-<g class="z nav" data-k="gsw">
-<rect class="hit" x="230" y="84" width="58" height="52"/>
-<text class="gt gs" x="259" y="98" text-anchor="middle">GS 420</text>
-<text class="gt gs" x="259" y="112" text-anchor="middle">WIND</text>
-<text class="gt gs" x="259" y="126" text-anchor="middle">270/15</text>
-</g>
-
-<!-- NAV: ETA and fuel -->
-<g class="z nav" data-k="eta">
-<rect class="hit" x="290" y="338" width="76" height="36"/>
-<text class="gt" x="364" y="350" text-anchor="end">ETA 1432</text>
-<text class="gt" x="364" y="366" text-anchor="end">FUEL 9.8</text>
-</g>
-
-<!-- NAV: master mode -->
-<g class="z nav" data-k="modeNAV">
-<rect class="hit" x="160" y="376" width="60" height="18"/>
-<text class="gt" x="190" y="390" text-anchor="middle">NAV</text>
-</g>
-
-<!-- Highlight ring (moved by script) -->
-<rect id="hl" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-dasharray="4 3" rx="4" style="display:none;pointer-events:none"/>
-</svg>
-</div>
-
-<div style="margin-top:8px;padding:12px 14px;border:0.5px solid rgba(255,255,255,.2);border-radius:12px;background:#141414">
-<div id="tt" style="font-weight:500;font-size:15px">Tap any symbol</div>
-<div id="tb" style="font-size:14px;line-height:1.6;color:#b5b5b0;margin-top:4px">Each item on the display is tappable. You'll get what it shows and how to use it.</div>
-</div>
+<body>
+<main>
+<h1>Fighter HUDs</h1>
+<div id="planes" role="tablist" aria-label="Aircraft"></div>
+<div id="hudbox"><svg id="hud" class="hud" viewBox="0 0 400 420" role="img" aria-label="Head-up display"></svg></div>
+<button id="mode" type="button"></button>
+<div id="card" aria-live="polite"></div>
+</main>
 <script>
-const D={
-heading:["Heading scale","Magnetic heading in degrees with the last zero dropped, so 36 is north. The caret and box show your current heading. Turn until it matches the heading you want, or until the steering diamond centers."],
-spd:["Airspeed","Calibrated airspeed in knots. Hold your target speed on approach and keep it above your best-turn speed in a fight."],
-mg:["Mach and G","Mach number on top, current load factor below. Watch G against structural limits during hard maneuvers."],
-alt:["Altitude","Altitude in feet, barometric by default. Check it against your floor, ceiling and terrain."],
-ralt:["Radar altitude","Height above the ground or water, read by the radar altimeter. It matters most in low flying and landing, and low-altitude warnings key off it."],
-pitch:["Pitch ladder","Climb and dive angle in 5 degree steps. Solid bars are above the horizon. Dashed bars are below it and angle toward it, so you can tell which way is up even in a steep dive."],
-horizon:["Horizon line","The 0 degree bar, the real horizon. It rolls with the jet, so its tilt shows bank angle. Keep it level to fly wings level."],
-fpm:["Flight path marker","Shows where the jet is actually going, not where the nose points. Put it on a landing aim point or target line to fly there. Above the horizon means climbing."],
-aoa:["Angle of attack bracket","Used on approach. It shifts relative to the flight path marker as angle of attack changes. Keep the marker lined up with the bracket to hold an on-speed approach."],
-steer:["Steering cue","Points you along the course to the selected waypoint or target. Fly the flight path marker onto the diamond to track it."],
-pip:["Gun reticle","The aiming cue, a circle with a center dot. In gun mode, put it on the target, use range and closure to judge lead, then fire."],
-tgt:["Target box","Marks a locked or designated target. The numbers underneath are range in nautical miles and closure rate in knots. Get the box near your aiming cue and inside weapon range before firing."],
-wpt:["Navigation data","Selected waypoint number and distance to it, with time to go below. Useful for legs of a route and timing."],
-wpn:["Weapon status","The selected weapon, here an AIM-9 Sidewinder, with the count and readiness. Verify weapon and count before pressing the release button."],
-mode:["Master mode: A/A","A/A means air-to-air. The gun reticle, target box and missile data are shown. Tap the MODE button on the left to cycle to ATTACK, then NAV."],
-fall:["Bomb fall line","The dashed line running up from the flight path marker to the pipper. It shows the ground track your bomb would follow. Keep it lined up with the target so the bomb lands on it."],
-ccip:["Bomb pipper (CCIP)","The continuously computed impact point. It shows where an unguided bomb released right now would hit, based on speed, altitude and dive angle. Fly the pipper onto the target and press the release button."],
-tdbox:["Designated ground target","Marks the ground target you designated with the sensors. The numbers under it are slant range in nautical miles and time to the release point in seconds. Steer so the pipper reaches it as the time runs out."],
-wpnAG:["Weapon status: bombs","The selected weapon is an unguided MK-82 bomb with the count and readiness. Check the weapon and count before releasing. The bomb falls where the pipper points."],
-modeAG:["Master mode: A/G","A/G means air-to-ground, the attack mode. The gun reticle and missile cues are replaced with the pipper, fall line, ground target marker and bomb data. Tap the MODE button to go on to NAV."],
-wptbrg:["Waypoint bearing marker","Sits on the heading scale at the compass bearing to the selected waypoint. Turn until it is under the heading caret and you are pointed straight at the waypoint."],
-gsw:["Ground speed and wind","Ground speed in knots on top, then the wind: direction it blows from in degrees, and speed in knots. Ground speed differs from airspeed because of wind, and it decides how fast you cover the distance to the waypoint."],
-eta:["ETA and fuel","Estimated time of arrival at the selected waypoint (24-hour clock) and fuel remaining in thousands of pounds. Compare the fuel to what you need to reach the waypoint and get home."],
-modeNAV:["Master mode: NAV","NAV is the navigation mode. Weapon cues are removed and the display focuses on flying a route: the steering cue, waypoint bearing, distance and time, ground speed and wind, ETA and fuel. Tap the MODE button to go back to A/A."]
+const T=(x,y,s,a)=>`<text x="${x}" y="${y}"${a?` text-anchor="${a}"`:''}>${s}</text>`;
+const G=(k,c)=>`<g class="t" data-k="${k}">${c}</g>`;
+const L=(a,b,c,d)=>`<path d="M${a} ${b}L${c} ${d}"/>`;
+const jet='<svg viewBox="0 0 100 60"><path d="M50 4L56 22 92 40V46L58 40 56 54 64 58V60H36V58L44 54 42 40 8 46V40L44 22Z"/></svg>';
+
+const INFO={
+ hdg:['Heading tape','Your compass heading. Ticks mark 5° steps; the boxed number is your exact heading (360 = north).'],
+ spd:['Airspeed','Calibrated airspeed in knots. The box shows the current value and the tape slides past it.'],
+ alt:['Altitude','Height above sea level in feet. Watch this closely during low-level attack runs.'],
+ ladder:['Pitch ladder','Lines every 5°/10° showing nose angle. Solid lines are above the horizon, dashed lines below. The long center line is the horizon.'],
+ fpm:['Flight path marker','Shows where the aircraft is actually going, not where the nose points. Put it on a target or runway to fly there.'],
+ aoa:['Angle of attack bracket','Height of the bracket shows how hard the wing is working. Centered means optimal; too high means close to a stall.'],
+ mg:['Mach and G','Mach number (M.85 = 85% of the speed of sound) and current G load on the airframe.'],
+ nav:['Navigation data','Active waypoint, distance to it in nautical miles, and time to go.'],
+ store:['Weapon status','Selected weapon and how many are ready to use.'],
+ rng:['Range','Distance to the target or radar range setting.'],
+ gun:['Gun reticle','The circle with the dot is where cannon rounds will go. Put it on the target and fire.'],
+ tgt:['Target box','A radar or sensor lock. The numbers show range (nm) and closure rate (kts). Positive means closing.'],
+ cue:['Steering cue','Fly the flight path marker to this cue to line up on the target.'],
+ pipper:['Bomb pipper','Where a bomb released right now would hit (CCIP). Steer it onto the target, then release.'],
+ ccip:['Impact line','Dashed line linking your flight path marker to the predicted impact point.'],
+ rel:['Release cue','The bar drops toward the pipper. Release when it reaches the pipper for a good solution.'],
+ wp:['Waypoint marker','Shows where your current waypoint is. Turn until it sits on the flight path marker.'],
+ wind:['Wind','Wind direction (degrees) and speed (knots).'],
+ fuel:['Fuel and ETA','Fuel remaining in thousands of pounds and estimated time of arrival at the waypoint.'],
+ ase:['ASE circle','Allowable Steering Error circle. Keep the dot inside it for the best missile shot.'],
+ td:['Target designator box','Box on the radar-locked target. Its size and numbers show range and closing speed.'],
+ rbar:['Range scale','Vertical bar with Rmax and Rmin ticks. The caret shows target range. Shoot while it is between them.'],
+ scan:['Missile scan circle','The infrared missile seeker looks inside this circle. Put the target in it to get a tone.'],
+ ils:['ILS steering lines','Vertical line = runway centerline, horizontal line = glide slope. Fly the flight path marker to the crosshair.'],
+ aoai:['AoA index','Chevrons and a donut on the left. Donut alone means on-speed approach; upper chevron means fast, lower means slow.'],
+ gear:['Gear and radar altitude','Landing gear status and height above the ground in feet.']
 };
-const svg=document.getElementById('hud'),hl=document.getElementById('hl');
-svg.querySelectorAll('.z').forEach(g=>g.addEventListener('click',()=>{
-  const b=g.querySelector('.hit').getBBox(),d=D[g.dataset.k];
-  hl.setAttribute('x',b.x);hl.setAttribute('y',b.y);
-  hl.setAttribute('width',b.width);hl.setAttribute('height',b.height);
-  hl.style.display='block';
-  document.getElementById('tt').textContent=d[0];
-  document.getElementById('tb').textContent=d[1];
-}));
-const btn=document.getElementById('modeBtn');
-const MODES={
-  aa:{val:'A/A',sub:'tap: attack',next:'ag',title:'Air-to-air mode (A/A)',
-      msg:'The gun reticle, target box and missile data are shown. Tap the MODE button to cycle to attack.'},
-  ag:{val:'ATTACK',sub:'tap: nav',next:'nav',title:'Attack mode (A/G)',
-      msg:'The gun reticle, target box and missile data are replaced by the bomb pipper, fall line, ground target marker and bomb data. Tap the new symbols to see what they do.'},
-  nav:{val:'NAV',sub:'tap: A/A',next:'aa',title:'Navigation mode (NAV)',
-      msg:'Weapon cues are removed. New here are the waypoint bearing marker on the heading scale, ground speed and wind, and ETA and fuel. Tap them to see what they do.'}
-};
-const NAMES={aa:'A/A',ag:'attack',nav:'navigation'};
-btn.addEventListener('click',()=>{
-  const n=MODES[document.body.dataset.mode].next,m=MODES[n];
-  document.body.dataset.mode=n;
-  document.getElementById('modeVal').textContent=m.val;
-  document.getElementById('modeSub').textContent=m.sub;
-  btn.setAttribute('aria-label','Master mode '+m.val+'. Tap to switch to '+NAMES[m.next]+'.');
-  hl.style.display='none';
-  document.getElementById('tt').textContent=m.title;
-  document.getElementById('tb').textContent=m.msg;
-});
+
+// shared pieces
+function heading(y){let s='',i,x;
+ s+=L(96,y,304,y);
+ for(i=-3;i<=3;i++){x=200+i*30;s+=L(x,y,x,y-(i%2?6:10));}
+ s+=T(140,y-14,'35','middle')+T(200,y-14,'36','middle')+T(260,y-14,'01','middle');
+ s+=`<path d="M200 ${y+2}l-6 9h12z"/><rect x="176" y="${y+13}" width="48" height="20" rx="3"/>`+T(200,y+28,'360','middle');
+ return G('hdg',s);}
+function tapes(){
+ return G('spd',`<path d="M78 130V270M78 130h-6M78 270h-6M78 150h-4M78 170h-4M78 190h-4M78 210h-4M78 230h-4M78 250h-4"/><rect x="14" y="190" width="54" height="22" rx="3"/>`+T(41,206,'350','middle'))
+ +G('alt',`<path d="M322 130V270M322 130h6M322 270h6M322 150h4M322 170h4M322 190h4M322 210h4M322 230h4M322 250h4"/><rect x="332" y="190" width="56" height="22" rx="3"/>`+T(360,206,'12500','middle'));}
+function ladder(){let s='';
+ [[-60,10,0],[-30,5,0],[30,5,1],[60,10,1]].forEach(([d,n,dash])=>{const y=200+d,da=dash?' stroke-dasharray="4 3"':'';
+  s+=`<path d="M150 ${y}H176M224 ${y}H250"${da}/>`+T(142,y+4,n,'end')+T(258,y+4,n);});
+ s+=L(100,200,165,200)+L(235,200,300,200);
+ return G('ladder',s);}
+function fpm(){return G('fpm','<circle cx="200" cy="200" r="7"/><path d="M186 200h7M207 200h7M200 193v-7"/>');}
+function aoa(){return G('aoa','<path d="M158 186h-7v28h7"/>');}
+function mg(){return G('mg',T(20,290,'M.85')+T(20,305,'G 3.2'));}
+function base(hy){return heading(hy)+tapes()+ladder()+fpm()+aoa()+mg();}
+const wpTxt=()=>G('nav',T(20,340,'WP3 12.4')+T(20,355,'TTG 3:42'));
+const lab=(t,y)=>T(200,y,t,'middle');
+function store(a,b){return G('store',T(380,340,a,'end')+T(380,355,b,'end'));}
+const rng=t=>G('rng',T(380,290,t,'end'));
+
+const PLANES=[
+ {id:'f18',name:'F/A-18C',sub:'Hornet',modes:[
+  {id:'A/A',desc:'Air-to-air. The gun reticle, target box and missile data are shown.',
+   draw:()=>base(46)+G('gun','<circle cx="200" cy="110" r="14"/><circle class="f" cx="200" cy="110" r="1.6"/><path d="M200 90v6M200 124v6M180 110h6M214 110h6"/>')
+    +G('tgt','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'4.2','middle')+T(290,152,'+320','middle'))
+    +G('cue','<path d="M135 102l8 8-8 8-8-8z"/>')+wpTxt()+rng('R 1200')+store('AIM-9','RDY 2')+lab('A/A',400)},
+  {id:'ATTACK',desc:'Attack (air-to-ground). The bomb pipper, impact line and release cue are shown.',
+   draw:()=>base(46)+G('pipper','<circle cx="200" cy="105" r="10"/><circle class="f" cx="200" cy="105" r="1.6"/>')
+    +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')
+    +G('rel','<path d="M170 150h60"/>')
+    +G('tgt','<path d="M262 92h-10v10M262 128h-10v-10M290 92h10v10M290 128h10v-10" transform="translate(-8 0)"/>'+T(284,146,'GS 420','middle'))
+    +wpTxt()+rng('TTR 14')+store('MK-82','RDY 4')+lab('A/G',400)},
+  {id:'NAV',desc:'Navigation. Waypoint, wind, ETA and fuel are shown.',
+   draw:()=>base(46)+G('wp','<circle cx="250" cy="110" r="10"/><path d="M250 100v-6M250 120v6M240 110h-6M260 110h6"/>')
+    +wpTxt()+G('wind',T(380,290,'WIND','end')+T(380,305,'270/15','end'))+G('fuel',T(380,340,'ETA 1432','end')+T(380,355,'FUEL 9.8','end'))+lab('NAV',400)}
+ ]},
+ {id:'f15',name:'F-15C',sub:'Eagle',modes:[
+  {id:'NAV',desc:'Navigation. Steering cue to the active waypoint, TACAN data and fuel are shown.',
+   draw:()=>base(368)+G('wp','<path d="M235 110l9 9-9 9-9-9z"/>')+wpTxt()
+    +G('wind',T(380,290,'TACAN','end')+T(380,305,'084/22','end'))+G('fuel',T(380,340,'FUEL 11.2','end')+T(380,355,'ETA 1432','end'))+lab('NAV',26)},
+  {id:'A/A',desc:'Air-to-air radar missile mode. Keep the dot inside the ASE circle and shoot inside the range scale.',
+   draw:()=>base(368)+G('ase','<circle cx="200" cy="120" r="46"/><circle class="f" cx="212" cy="112" r="2"/>')
+    +G('td','<rect x="228" y="96" width="22" height="22"/>'+T(239,134,'18.5','middle'))
+    +G('rbar','<path d="M290 70V170M285 82h10M285 150h10"/><path class="f" d="M282 118l7-4v8z"/>'+T(298,86,'Rmax')+T(298,154,'Rmin'))
+    +wpTxt()+rng('Vc +320')+store('AIM-120','RDY 4')+lab('A/A',26)},
+  {id:'DGFT',desc:'Dogfight. Boresight gun cross and a missile scan circle for close-in fights.',
+   draw:()=>base(368)+G('gun','<path d="M200 96v28M186 110h28"/><circle class="f" cx="200" cy="110" r="1.6"/>')
+    +G('scan','<circle cx="200" cy="110" r="46" stroke-dasharray="5 4"/>')
+    +wpTxt()+rng('GUN 510')+store('AIM-9','RDY 2')+lab('DGFT',26)},
+  {id:'A/G',desc:'Air-to-ground. Bomb pipper, impact line and release cue are shown.',
+   draw:()=>base(368)+G('pipper','<circle cx="200" cy="105" r="10"/><circle class="f" cx="200" cy="105" r="1.6"/>')
+    +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
+    +wpTxt()+rng('TTR 12')+store('MK-82','RDY 6')+lab('A/G',26)},
+  {id:'LAND',desc:'Landing. ILS lines, AoA index and gear status are shown.',
+   draw:()=>base(368)+G('ils','<path d="M208 90V310M110 194H290" stroke-dasharray="6 4"/>')
+    +G('aoai','<circle cx="126" cy="200" r="5"/><path d="M118 180l8-6 8 6M118 220l8 6 8-6"/>')
+    +wpTxt()+G('gear',T(380,290,'GEAR DN','end')+T(380,305,'RA 250','end'))+lab('LAND',26)}
+ ]},
+ {id:'f16',name:'F-16C',sub:'Viper',soon:1},
+ {id:'f22',name:'F-22A',sub:'Raptor',soon:1},
+ {id:'a10',name:'A-10C',sub:'Warthog',soon:1}
+];
+
+let cur=PLANES[0],mi=0;
+const $=id=>document.getElementById(id),hud=$('hud');
+
+function buildPlanes(){
+ $('planes').innerHTML=PLANES.map(p=>`<button class="plane${p.soon?' soon':''}" data-id="${p.id}" role="tab">${jet}<b>${p.name}</b><small>${p.soon?'HUD coming soon':p.sub}</small></button>`).join('');
+ $('planes').onclick=e=>{const b=e.target.closest('.plane');if(!b)return;
+  const p=PLANES.find(x=>x.id===b.dataset.id);
+  if(p.soon){card(p.name+' '+p.sub,'This HUD is not built yet. Tap the F/A-18C or F-15C to explore.');return;}
+  cur=p;mi=0;render();};
+}
+function card(t,x){$('card').innerHTML=`<h2>${t}</h2><p>${x}</p>`;}
+function render(){
+ const m=cur.modes[mi],next=cur.modes[(mi+1)%cur.modes.length];
+ document.querySelectorAll('.plane').forEach(b=>{b.classList.toggle('on',b.dataset.id===cur.id);b.setAttribute('aria-selected',b.dataset.id===cur.id);});
+ hud.innerHTML=m.draw();
+ hud.querySelectorAll('.t').forEach(g=>{const b=g.getBBox();
+  g.insertAdjacentHTML('afterbegin',`<rect class="hit" rx="5" x="${b.x-8}" y="${b.y-8}" width="${b.width+16}" height="${b.height+16}"/>`);});
+ $('mode').innerHTML=`<span>MODE</span><b>${m.id}</b><span>tap: ${next.id}</span>`;
+ card(cur.name+' '+m.id+' mode',m.desc+' Tap any symbol to see what it does.');
+}
+hud.onclick=e=>{const g=e.target.closest('.t');if(!g)return;
+ hud.querySelectorAll('.sel').forEach(n=>n.classList.remove('sel'));g.classList.add('sel');
+ const i=INFO[g.dataset.k];card(i[0],i[1]);};
+$('mode').onclick=()=>{mi=(mi+1)%cur.modes.length;render();};
+buildPlanes();render();
 </script>
 </body>
 </html>
