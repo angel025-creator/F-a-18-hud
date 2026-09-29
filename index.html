@@ -210,6 +210,54 @@ const PLANES=[
     +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
     +wpTxt()+rng('TTR 10')+store('FAB-500','RDY 4')+lab('A/G',400)}
  ]},
+ {id:'su30',name:'Su-30',sub:'Flanker-C',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint steering, wind and fuel are shown.',
+   draw:()=>base(46)+G('wp','<path d="M235 110l9 9-9 9-9-9z"/>')+wpTxt()
+    +G('wind',T(380,290,'WIND','end')+T(380,305,'020/14','end'))+G('fuel',T(380,340,'FUEL 13.4','end')+T(380,355,'ETA 1432','end'))+lab('NAV',400)},
+  {id:'A/A',desc:'Air-to-air. Radar target box and missile range bracket for long-range intercepts.',
+   draw:()=>base(46)+G('ase','<circle cx="200" cy="120" r="46"/><circle class="f" cx="210" cy="110" r="2"/>')
+    +G('td','<rect x="228" y="96" width="22" height="22"/>'+T(239,134,'26.0','middle'))
+    +G('rbar','<path d="M300 70V170M295 82h10M295 150h10"/><path class="f" d="M292 108l7-4v8z"/>')
+    +wpTxt()+rng('Vc +350')+store('R-77','RDY 6')+lab('A/A',400)},
+  {id:'A/G',desc:'Air-to-ground. Bomb pipper, impact line and release cue.',
+   draw:()=>base(46)+G('pipper','<circle cx="200" cy="105" r="10"/><circle class="f" cx="200" cy="105" r="1.6"/>')
+    +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
+    +wpTxt()+rng('TTR 13')+store('KAB-500','RDY 2')+lab('A/G',400)},
+  {id:'DGFT',desc:'Dogfight. Boresight gun cross and missile scan circle for close-in fights.',
+   draw:()=>base(46)+G('gun','<path d="M200 96v28M186 110h28"/><circle class="f" cx="200" cy="110" r="1.6"/>')
+    +G('scan','<circle cx="200" cy="110" r="46" stroke-dasharray="5 4"/>')
+    +wpTxt()+rng('GUN 500')+store('R-73','RDY 2')+lab('DGFT',400)}
+ ]},
+ {id:'mig29',name:'MiG-29',sub:'Fulcrum',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint steering, wind and fuel are shown.',
+   draw:()=>base(46)+G('wp','<path d="M235 110l9 9-9 9-9-9z"/>')+wpTxt()
+    +G('wind',T(380,290,'WIND','end')+T(380,305,'190/11','end'))+G('fuel',T(380,340,'FUEL 8.6','end')+T(380,355,'ETA 1432','end'))+lab('NAV',400)},
+  {id:'A/A',desc:'Air-to-air. Radar target box and missile range bracket.',
+   draw:()=>base(46)+G('td','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'16.0','middle')+T(290,152,'+260','middle'))
+    +G('rbar','<path d="M310 70V170M305 82h10M305 150h10"/><path class="f" d="M302 122l7-4v8z"/>')
+    +wpTxt()+rng('Vc +260')+store('R-27','RDY 4')+lab('A/A',400)},
+  {id:'DGFT',desc:'Dogfight. Boresight gun cross and helmet-cued missile scan circle for close-in fights.',
+   draw:()=>base(46)+G('gun','<path d="M200 96v28M186 110h28"/><circle class="f" cx="200" cy="110" r="1.6"/>')
+    +G('scan','<circle cx="200" cy="110" r="46" stroke-dasharray="5 4"/>')
+    +wpTxt()+rng('GUN 480')+store('R-73','RDY 2')+lab('DGFT',400)},
+  {id:'GUN',desc:'Gun. Put the reticle on the target and fire the internal 30mm cannon.',
+   draw:()=>base(46)+G('gun','<circle cx="200" cy="110" r="14"/><circle class="f" cx="200" cy="110" r="1.6"/><path d="M200 90v6M200 124v6M180 110h6M214 110h6"/>')
+    +G('tgt','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'0.9','middle'))
+    +wpTxt()+rng('R 500')+store('GSh-30-1','RDS 150')+lab('GUN',400)}
+ ]},
+ {id:'f14',name:'F-14D',sub:'Tomcat',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint steering, wind and fuel are shown.',
+   draw:()=>base(46)+G('wp','<path d="M235 110l9 9-9 9-9-9z"/>')+wpTxt()
+    +G('wind',T(380,290,'WIND','end')+T(380,305,'300/13','end'))+G('fuel',T(380,340,'FUEL 15.2','end')+T(380,355,'ETA 1432','end'))+lab('NAV',400)},
+  {id:'A/A',desc:'Air-to-air. Long-range radar target box for the AIM-54 Phoenix, with a missile range bracket.',
+   draw:()=>base(46)+G('td','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'42.0','middle')+T(290,152,'+380','middle'))
+    +G('rbar','<path d="M310 70V170M305 82h10M305 150h10"/><path class="f" d="M302 92l7-4v8z"/>')
+    +wpTxt()+rng('Vc +380')+store('AIM-54','RDY 4')+lab('A/A',400)},
+  {id:'DGFT',desc:'Dogfight. Boresight gun cross and missile scan circle for close-in fights.',
+   draw:()=>base(46)+G('gun','<path d="M200 96v28M186 110h28"/><circle class="f" cx="200" cy="110" r="1.6"/>')
+    +G('scan','<circle cx="200" cy="110" r="46" stroke-dasharray="5 4"/>')
+    +wpTxt()+rng('GUN 520')+store('AIM-9','RDY 2')+lab('DGFT',400)}
+ ]},
  {id:'f16',name:'F-16C',sub:'Viper',soon:1},
  {id:'a10',name:'A-10C',sub:'Warthog',soon:1}
 ];
