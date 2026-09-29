@@ -76,7 +76,9 @@ const INFO={
  scan:['Missile scan circle','The infrared missile seeker looks inside this circle. Put the target in it to get a tone.'],
  ils:['ILS steering lines','Vertical line = runway centerline, horizontal line = glide slope. Fly the flight path marker to the crosshair.'],
  aoai:['AoA index','Chevrons and a donut on the left. Donut alone means on-speed approach; upper chevron means fast, lower means slow.'],
- gear:['Gear and radar altitude','Landing gear status and height above the ground in feet.']
+ gear:['Gear and radar altitude','Landing gear status and height above the ground in feet.'],
+ vv:['Vertical velocity','How fast you are climbing or descending in vertical flight, in feet per minute. 0 means holding altitude.'],
+ hov:['Hover balance cue','Keep the small circle centered between the bars to hold a stable hover with no drift.']
 };
 
 INFO.rkt=['Rocket aiming mark','Where unguided rockets land if fired now. Dive at the target, put the mark on it, and fire.'];
@@ -160,12 +162,59 @@ const PLANES=[
     +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
     +wpTxt()+rng('TTR 9')+store('MK-82','RDY 2')+lab('A/G',400)}
  ]},
+ {id:'f35',name:'F-35A',sub:'Lightning II',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint steering, wind and fuel are shown on the helmet-mounted style display.',
+   draw:()=>base(46)+G('wp','<path d="M235 110l9 9-9 9-9-9z"/>')+wpTxt()
+    +G('wind',T(380,290,'WIND','end')+T(380,305,'250/9','end'))+G('fuel',T(380,340,'FUEL 12.6','end')+T(380,355,'ETA 1432','end'))+lab('NAV',400)},
+  {id:'A/A',desc:'Air-to-air. Sensor fusion target box and missile range bracket are shown.',
+   draw:()=>base(46)+G('td','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'22.0','middle')+T(290,152,'+280','middle'))
+    +G('rbar','<path d="M310 70V170M305 82h10M305 150h10"/><path class="f" d="M302 118l7-4v8z"/>')
+    +wpTxt()+rng('Vc +280')+store('AIM-120','RDY 4')+lab('A/A',400)},
+  {id:'A/G',desc:'Air-to-ground. Bomb pipper, impact line and release cue for internal or external stores.',
+   draw:()=>base(46)+G('pipper','<circle cx="200" cy="105" r="10"/><circle class="f" cx="200" cy="105" r="1.6"/>')
+    +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
+    +wpTxt()+rng('TTR 11')+store('GBU-31','RDY 2')+lab('A/G',400)},
+  {id:'STOVL',desc:'Short takeoff/vertical landing. Vertical speed tape and hover balance cue replace the flight path marker.',
+   draw:()=>heading(46)+tapes('80','150')+G('vv','<path d="M330 130V270M336 200h8"/>'+T(348,204,'VV 0','middle'))
+    +G('hov','<circle cx="200" cy="200" r="9"/><path d="M186 200h-10M214 200h10"/>')
+    +wpTxt()+G('gear',T(380,290,'DOORS OPEN','end')+T(380,305,'NOZ 95','end'))+lab('STOVL',400)}
+ ]},
+ {id:'f22',name:'F-22A',sub:'Raptor',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint steering, wind and fuel are shown.',
+   draw:()=>base(46)+G('wp','<path d="M235 110l9 9-9 9-9-9z"/>')+wpTxt()
+    +G('wind',T(380,290,'WIND','end')+T(380,305,'310/18','end'))+G('fuel',T(380,340,'FUEL 14.8','end')+T(380,355,'ETA 1432','end'))+lab('NAV',400)},
+  {id:'A/A',desc:'Air-to-air. Long-range radar target box and missile range scale, tuned for high-aspect intercepts.',
+   draw:()=>base(46)+G('ase','<circle cx="200" cy="120" r="46"/><circle class="f" cx="208" cy="114" r="2"/>')
+    +G('td','<rect x="228" y="96" width="22" height="22"/>'+T(239,134,'34.0','middle'))
+    +G('rbar','<path d="M300 70V170M295 82h10M295 150h10"/><path class="f" d="M292 100l7-4v8z"/>')
+    +wpTxt()+rng('Vc +410')+store('AIM-120','RDY 6')+lab('A/A',400)},
+  {id:'DGFT',desc:'Dogfight. Boresight gun cross and missile scan circle for close-in fights.',
+   draw:()=>base(46)+G('gun','<path d="M200 96v28M186 110h28"/><circle class="f" cx="200" cy="110" r="1.6"/>')
+    +G('scan','<circle cx="200" cy="110" r="46" stroke-dasharray="5 4"/>')
+    +wpTxt()+rng('GUN 610')+store('AIM-9','RDY 2')+lab('DGFT',400)}
+ ]},
+ {id:'su25',name:'Su-25',sub:'Frogfoot',modes:[
+  {id:'NAV',desc:'Navigation. Waypoint, wind, ETA and fuel are shown.',
+   draw:()=>base(46,{sp:'300',al:'2000'})+G('wp','<circle cx="250" cy="110" r="10"/><path d="M250 100v-6M250 120v6M240 110h-6M260 110h6"/>')
+    +wpTxt()+G('wind',T(380,290,'WIND','end')+T(380,305,'040/10','end'))+G('fuel',T(380,340,'ETA 1432','end')+T(380,355,'FUEL 3.1','end'))+lab('NAV',400)},
+  {id:'GUN',desc:'Gun. Put the reticle on the target and fire the nose-mounted twin-barrel cannon.',
+   draw:()=>base(46,{sp:'300',al:'2000'})+G('gun','<circle cx="200" cy="110" r="14"/><circle class="f" cx="200" cy="110" r="1.6"/><path d="M200 90v6M200 124v6M180 110h6M214 110h6"/>')
+    +G('tgt','<rect x="277" y="92" width="26" height="26"/>'+T(290,138,'1.1','middle'))
+    +wpTxt()+rng('R 900')+store('GSh-30','RDS 250')+lab('GUN',400)},
+  {id:'ROCKET',desc:'Rockets. The aiming mark shows where unguided rockets will land.',
+   draw:()=>base(46,{sp:'300',al:'2000'})+G('rkt','<circle cx="200" cy="105" r="10"/><path d="M190 105h20M200 95v20"/>')
+    +G('tgt','<path d="M262 92h-10v10M262 128h-10v-10M290 92h10v10M290 128h10v-10" transform="translate(-8 0)"/>')
+    +wpTxt()+rng('R 1800')+store('S-8','RDY 20')+lab('RKT',400)},
+  {id:'BOMB',desc:'Bombs. The pipper shows the predicted impact point. Release when the cue reaches it.',
+   draw:()=>base(46,{sp:'300',al:'2000'})+G('pipper','<circle cx="200" cy="105" r="10"/><circle class="f" cx="200" cy="105" r="1.6"/>')
+    +G('ccip','<path d="M200 120V190" stroke-dasharray="3 4"/>')+G('rel','<path d="M170 150h60"/>')
+    +wpTxt()+rng('TTR 10')+store('FAB-500','RDY 4')+lab('A/G',400)}
+ ]},
  {id:'f16',name:'F-16C',sub:'Viper',soon:1},
- {id:'f22',name:'F-22A',sub:'Raptor',soon:1},
  {id:'a10',name:'A-10C',sub:'Warthog',soon:1}
 ];
 
-const COL={'A/A':'#39ff88','DGFT':'#ff5cf0','GUN':'#f5ff5a','ATTACK':'#ffa62b','A/G':'#6aa8ff','ROCKET':'#ff6a2a','BOMB':'#b48cff','NAV':'#4fe8ff','LAND':'#ff4a4a'};
+const COL={'A/A':'#39ff88','DGFT':'#ff5cf0','GUN':'#f5ff5a','ATTACK':'#ffa62b','A/G':'#6aa8ff','ROCKET':'#ff6a2a','BOMB':'#b48cff','NAV':'#4fe8ff','LAND':'#ff4a4a','STOVL':'#5affc7'};
 let cur=PLANES[0],mi=0;
 const $=id=>document.getElementById(id),hud=$('hud');
 
